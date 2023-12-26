@@ -1,0 +1,88 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+// Function to check and process a single sack
+bool processSack(char content, double weight, double& totalPrice, int& rejectedSacks) {
+    bool isValid = true;
+
+    // Check contents and weight
+    if ((content == 'C' && (weight < 24.9 || weight > 25.1)) ||
+        ((content == 'G' || content == 'S') && (weight < 49.9 || weight > 50.1))) {
+        cout << "Rejected sack: Incorrect weight or contents\n";
+        isValid = false;
+        rejectedSacks++;
+    } else {
+        // Calculate price
+        if (content == 'C') {
+            totalPrice += 3.0;
+        } else {
+            totalPrice += 2.0;
+        }
+    }
+
+    return isValid;
+}
+
+// Function to check a customer's order
+void processOrder(int numCement, int numGravel, int numSand, double& totalPrice, int& rejectedSacks) {
+    for (int i = 0; i < numCement; ++i) {
+        char content = 'C';
+        double weight;
+        cout << "Enter weight for cement sack " << i + 1 << ": ";
+        cin >> weight;
+        processSack(content, weight, totalPrice, rejectedSacks);
+    }
+
+    for (int i = 0; i < numGravel; ++i) {
+        char content = 'G';
+        double weight;
+        cout << "Enter weight for gravel sack " << i + 1 << ": ";
+        cin >> weight;
+        processSack(content, weight, totalPrice, rejectedSacks);
+    }
+
+    for (int i = 0; i < numSand; ++i) {
+        char content = 'S';
+        double weight;
+        cout << "Enter weight for sand sack " << i + 1 << ": ";
+        cin >> weight;
+        processSack(content, weight, totalPrice, rejectedSacks);
+    }
+}
+
+// Function to calculate the total price with discounts
+void calculatePrice(double& totalPrice, int numCement, int numGravel, int numSand) {
+    int numSpecialPacks = min(numCement, min(numGravel / 2, numSand / 2));
+    double discountPrice = numSpecialPacks * 10.0;
+    totalPrice -= discountPrice;
+
+    cout << "Regular price: $" << totalPrice + discountPrice << endl;
+    cout << "Discount applied: $" << discountPrice << endl;
+    cout << "New price: $" << totalPrice << endl;
+}
+
+int main() {
+    int numCement, numGravel, numSand;
+    double totalPrice = 0.0;
+    int rejectedSacks = 0;
+
+    cout << "Enter the number of sacks for the order:\n";
+    cout << "Cement: ";
+    cin >> numCement;
+    cout << "Gravel: ";
+    cin >> numGravel;
+    cout << "Sand: ";
+    cin >> numSand;
+
+    processOrder(numCement, numGravel, numSand, totalPrice, rejectedSacks);
+
+    cout << "\nTotal weight of the order: " << totalPrice << " kilograms\n";
+    cout << "Number of rejected sacks: " << rejectedSacks << "\n";
+
+    // Calculate and display the price with discounts
+    calculatePrice(totalPrice, numCement, numGravel, numSand);
+
+    return 0;
+}
